@@ -3,3 +3,4 @@ tqdm
 numpy
 taipy
 openai
+sklearn
