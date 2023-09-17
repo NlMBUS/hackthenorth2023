@@ -1,8 +1,9 @@
 from taipy.gui import Gui, notify
 from gpt_helpers import generate_review, generate_rating
+from runModel import runModel
 
 text = "Write your review here!"
-rating = None
+rating = ""
 
 # review vars
 review_location = 3
@@ -44,7 +45,7 @@ page2_md = """
 
 <|{text}|input|multiline|fullwidth|class_name=fullwidth|>
 
-<center><|Get Rating|button|on_action=on_button_action|></center>
+<center><|Set Rating|button|on_action=on_button_action|></center>
 """
 
 page3_md = """
@@ -105,7 +106,8 @@ Write it in 3 sentences, and give an overall rating.
 
 def on_button_action(state):
     notify(state, 'info', 'Analyzing review...')
-    state.rating = generate_rating(state.text)
+    state.rating = str(runModel(state.text))
+
 
 def on_change(state, var_name, var_value):
     if var_name == "text" and var_value == "Reset":
