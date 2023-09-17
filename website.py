@@ -1,5 +1,5 @@
 from taipy.gui import Gui, notify
-from review_gen import generate_review
+from gpt_helpers import generate_review, generate_rating
 
 text = "Write your review here!"
 rating = None
@@ -35,7 +35,7 @@ page2_md = """
 
 ## Write Your Review Below
 
-#### Your Rating: <|{rating}|>
+#### Your Rating: <|{rating}|id=rating|> / 5
 
 <|{text}|input|multiline|fullwidth|class_name=fullwidth|>
 
@@ -99,8 +99,8 @@ Write it in 3 sentences, and give an overall rating.
     state.review_iswritten = True
 
 def on_button_action(state):
-    notify(state, 'info', f'The text is: {state.text}')
-    state.text = "Button Pressed"
+    notify(state, 'info', 'Analyzing review...')
+    state.rating = generate_rating(state.text)
 
 def on_change(state, var_name, var_value):
     if var_name == "text" and var_value == "Reset":
