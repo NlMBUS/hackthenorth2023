@@ -92,7 +92,7 @@ def on_write_review(state):
     notify(state, 'info', 'Review Writing in Progress...')
     prompt = f"""
 Write a review for a hotel given the following ratings:
-Location: {review_location}/5, Cleanliness: {review_cleanliness}/5, Check in/check out: {review_checkin_checkout}/5, Service: {review_service}/5, Value for money: {review_value}/5, Amenities: {review_amenities}/5.
+Location: {state.review_location}/5, Cleanliness: {state.review_cleanliness}/5, Check in/check out: {state.review_checkin_checkout}/5, Service: {state.review_service}/5, Value for money: {state.review_value}/5, Amenities: {state.review_amenities}/5.
 Write it in 3 sentences, and give an overall rating.
 """
     state.review_out = generate_review(prompt)
