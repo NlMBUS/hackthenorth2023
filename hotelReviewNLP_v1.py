@@ -76,17 +76,25 @@ writer.close()
 
 df_3 = preprocessing.OrdinalEncoder().fit_transform(df[['Rating']]) # Map to unique numbers
 
-reducer = umap.UMAP(n_neighbors=50, metric='cosine', target_weight=0.2, verbose=True)
-reduced = reducer.fit_transform(embeddings, df['Rating'])
+for i in (0, 0.1, 0.2, 0.3, 0.4):
+  for n in (2, 5, 10, 20, 50, 100, 200):
+    print(f"images/weight_{i}_n_neighbors_{n}.png")
+    reducer = umap.UMAP(n_neighbors=n, metric='cosine', target_weight=i, verbose=True)
+    reduced = reducer.fit_transform(embeddings, df['Rating'])
 
 
-fig = px.scatter(x=reduced[:, 0],
-            y=reduced[:, 1],
-            hover_data=[df['Rating']],
-            width=1000,
-            height=1000)
-fig.update_traces(marker={'size': 2})
-fig.show()
+    fig = px.scatter(x=reduced[:, 0],
+                y=reduced[:, 1],
+                hover_data=[df['Rating']],
+                width=1000,
+                height=1000,
+                title=f"target_weight={i}")
+    fig.update_traces(marker={'size': 2})
+    fig.write_image(f"./images/weight_{i}_n_neighbors_{n}.png")
+
+
+
+
 
 
 
