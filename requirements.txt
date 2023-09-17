@@ -1,6 +1,5 @@
 cohere 
 tqdm
 numpy
-pickle
 taipy
 openai
