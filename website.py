@@ -29,6 +29,11 @@ page1_md = """
 **Do you ever have trouble deciding what to rate a hotel after your visit? Do you ever worry that the rating you give isn't truly indicative of your experience?**{: .padded-text }
 
 **This is where AccurRate comes in. You simply write about your experience, and we use the power of machine learning to rate your stay for you. Our AI model has been trained on tens of thousands of reviews and ratings specifically so you can ensure your hotel rating is as accurate as possible!**{: .padded-text }
+
+<br/><br/><br/>
+
+<center><img src="static/goose.png" width="350px"/></center>
+
 """
 
 page2_md = """
@@ -39,7 +44,7 @@ page2_md = """
 
 <|{text}|input|multiline|fullwidth|class_name=fullwidth|>
 
-<|Run local|button|on_action=on_button_action|>
+<center><|Get Rating|button|on_action=on_button_action|></center>
 """
 
 page3_md = """
@@ -76,7 +81,7 @@ Amenities: <|{review_amenities}|> / 5
 <|{review_amenities}|slider|min=1|max=5|>
 |>
 |>
-<|Write Review|button|on_action=on_write_review|>
+<center><|Write Review|button|on_action=on_write_review|></center>
 
 <|part|render={review_iswritten}|
 ### Output: ### {: .text-center }
