@@ -1,3 +1,4 @@
+import os
 from sentence_transformers import SentenceTransformer
 import cohere
 from tqdm import tqdm
@@ -9,19 +10,17 @@ from sklearn.pipeline import make_pipeline
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 
-from sklearn.model_selection import GridSearchCV
 import pickle
+from dotenv import load_dotenv
 
-
+load_dotenv(dotenv_path='.env')
 
 #device = 'cuda' # nvidia-gpu
 # device = 'mps' # apple-gpu
 device = 'cpu' # no gpu
 
-f = open("cohere-key.txt", "r")
+co = cohere.Client(os.getenv("COHERE_API_KEY")) # or None if you dont want to use Cohere
 
-co = cohere.Client(f.read()) # or None if you dont want to use Cohere
-model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2') # free offline transformer
 def encode(text):
   if co is not None:
     if len(text) > 95:
@@ -46,31 +45,31 @@ def encode(text):
       ).embeddings
     embed = np.array(embed)
   else:
-    embed = model.encode(text, device=device, show_progress_bar=True, batch_size=64)
-
+    raise Exception("No API Key was found")
+  
   return embed
 
 
 
-df = pd.read_csv('testData2.csv')
+df = pd.read_csv('../tripadvisor_hotel_reviews.csv')
 
 encodings = encode(df["Review"].to_list())
 
-df_train = df[:400]
-df_test = df[100:]
+df_train = df[:4000]
+df_test = df[4000:5000]
 
 # Prepare the training features and label
-features = encodings[:400]
+features = encodings[:4000]
 label = df_train["Rating"]
-inputs = encodings[100:]
+inputs = encodings[4000:5000]
 
 
 
-# c=100 and gamma=0.0001 and kernel=rbf 
+# c=1000 and gamma=0.0001 and kernel=rbf => 62.3%
 
-'''
 # Tuning the Hyperparameters
 
+'''
 file = open("results.txt", "w")
 
 param_grid = {'C': [0.1, 1, 10, 100, 1000], 
@@ -95,10 +94,11 @@ for c_test in param_grid['C']:
       score = svm_classifier.score(inputs, df_test['Rating'])
       file.write(f"c={c_test} and gamma={gamma_test} and kernel={kernel_test} => {100*score}%\n")
       print(f"c={c_test} and gamma={gamma_test} and kernel={kernel_test} => {100*score}%\n")
-'''
 
+'''
+      
 # Scale the values -> Linear Classifier
-svm_classifier = make_pipeline(StandardScaler(), SVC(C=100, gamma=0.0001, kernel="rbf"))
+svm_classifier = make_pipeline(StandardScaler(), SVC(C=1000, gamma=0.0001, kernel="rbf"))
 
 # Fit the support vector machine
 svm_classifier.fit(features, label)
@@ -108,34 +108,8 @@ df_test['Rating_pred'] = svm_classifier.predict(inputs)
 # Compute the score
 score = svm_classifier.score(inputs, df_test['Rating'])
 
-with open('filename.pkl', 'wb') as f:
+with open('model.pkl', 'wb') as f:
   pickle.dump(svm_classifier, f)
 
 print(f"Accuracy: {100*score}%\n")
 
-
-# sample_input = "i hate this hotel"
-# encoded = encode([sample_input])
-
-# print(svm_classifier.predict(encoded.reshape(1, -1)))
-
-# sample_input = "i love this hotel"
-# encoded = encode([sample_input])
-
-# print(svm_classifier.predict(encoded.reshape(1, -1)))
-
-# sample_input = "medicore experience"
-# encoded = encode([sample_input])
-
-# print(svm_classifier.predict(encoded.reshape(1, -1)))
-
-
-# sample_input = "its okay"
-# encoded = encode([sample_input])
-
-# print(svm_classifier.predict(encoded.reshape(1, -1)))
-
-# sample_input = "i brought my dog to the hotel"
-# encoded = encode([sample_input])
-
-# print(svm_classifier.predict(encoded.reshape(1, -1)))

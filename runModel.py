@@ -1,16 +1,18 @@
+import os
 import cohere
 from tqdm import tqdm
 import time
 import numpy as np
 import pickle
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path='.env')
 
 #device = 'cuda' # nvidia-gpu
 # device = 'mps' # apple-gpu
 device = 'cpu' # no gpu
 
-f = open("cohere-key.txt", "r")
-
-co = cohere.Client(f.read()) # or None if you dont want to use Cohere
+co = cohere.Client(os.getenv("COHERE_API_KEY")) # or None if you dont want to use Cohere
 
 def encode(text):
   if co is not None:
@@ -48,4 +50,5 @@ def runModel(input: str) -> int:
         encoded = encode([input])
 
         return pipeline.predict(encoded.reshape(1, -1))[0]
+
 

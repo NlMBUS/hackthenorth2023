@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 import faiss
@@ -18,7 +19,6 @@ device = 'cpu' # no gpu
 f = open("cohere-key.txt", "r")
 
 co = cohere.Client(f.read()) # or None if you dont want to use Cohere
-co = None
 model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2') # free offline transformer
 def encode(text):
   if co is not None:
