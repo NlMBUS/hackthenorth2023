@@ -105,6 +105,7 @@ Write it in 3 sentences, and give an overall rating.
     state.review_iswritten = True
 
 def on_button_action(state):
+    state.rating = ""
     notify(state, 'info', 'Analyzing review...')
     state.rating = str(runModel(state.text))
 
