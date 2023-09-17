@@ -1,4 +1,3 @@
-from sentence_transformers import SentenceTransformer
 import cohere
 from tqdm import tqdm
 import time
@@ -12,7 +11,7 @@ device = 'cpu' # no gpu
 f = open("cohere-key.txt", "r")
 
 co = cohere.Client(f.read()) # or None if you dont want to use Cohere
-model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2') # free offline transformer
+
 def encode(text):
   if co is not None:
     if len(text) > 95:
@@ -37,15 +36,16 @@ def encode(text):
       ).embeddings
     embed = np.array(embed)
   else:
-    embed = model.encode(text, device=device, show_progress_bar=True, batch_size=64)
+    raise Exception("No API Key was found")
 
   return embed
 
 
 def runModel(input: str) -> int:
-    with open('filename.pkl', 'rb') as f:
+    with open('model.pkl', 'rb') as f:
         pipeline = pickle.load(f)
     
         encoded = encode([input])
 
-        print(pipeline.predict(encoded.reshape(1, -1)))
+        return pipeline.predict(encoded.reshape(1, -1))[0]
+
